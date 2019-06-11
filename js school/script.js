@@ -1,4 +1,27 @@
-'use strict';
+let start = document.getElementById('start'), //Получить кнопку "Начать расчет" через id
+	budgetValue = document.getElementsByClassName('budget-value')[0],
+	daybudgetValue = document.getElementsByClassName('daybudget-value')[0],
+	levelValue = document.getElementsByClassName('level-value')[0],
+	expensesValue = document.getElementsByClassName('expenses-value')[0],
+	optionalexpensesValue = document.getElementsByClassName('optionalexpenses-value')[0],
+	incomeValue = document.getElementsByClassName('income-value')[0],
+	monthsavingsValue = document.getElementsByClassName('monthsavings-value')[0],
+	yearsavingsValue = document.getElementsByClassName('yearsavings-value')[0],
+
+
+	expensesItem = document.getElementsByClassName('expenses-item'), //Получить поля(input) c обязательными расходами через класс. (class=”expenses-item”)
+	expensesBtn = document.getElementsByTagName('button')[0],
+	optionalExpensesBtn = document.getElementsByTagName('button')[1],
+	countBtn = document.getElementsByTagName('button')[2], //Получить кнопки “Утвердить” и “Рассчитать” через Tag, каждую в своей переменной. 
+	optexp = document.querySelectorAll('.optionalexpenses-item'), //Получить поля для ввода необязательных расходов (optionalexpenses-item) при помощи querySelectorAll
+	incomeItem = document.querySelector('.choose-income'), //статьи возможного дохода
+	checkSavings = document.querySelector('#savings'),//чекбокс
+	sumValue = document.querySelector('.choose-sum'),//сумма
+	percentValue = document.querySelector('.choose-percent'),//процент
+	yearValue = document.querySelector('.year-value'), //год
+	monthValue = document.querySelector('.month-value'), //месяц
+	dayValue = document.querySelector('.day-value'); //день
+
 
 let money, time;
 
