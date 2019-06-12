@@ -1,3 +1,4 @@
+
 let start = document.getElementById('start'), //Получить кнопку "Начать расчет" через id
 	budgetValue = document.getElementsByClassName('budget-value')[0],
 	daybudgetValue = document.getElementsByClassName('daybudget-value')[0],
@@ -13,7 +14,7 @@ let start = document.getElementById('start'), //Получить кнопку "�
 	expensesBtn = document.getElementsByTagName('button')[0],
 	optionalExpensesBtn = document.getElementsByTagName('button')[1],
 	countBtn = document.getElementsByTagName('button')[2], //Получить кнопки “Утвердить” и “Рассчитать” через Tag, каждую в своей переменной. 
-	optexp = document.querySelectorAll('.optionalexpenses-item'), //Получить поля для ввода необязательных расходов (optionalexpenses-item) при помощи querySelectorAll
+	optionalexpensesItem = document.querySelectorAll('.optionalexpenses-item'), //Получить поля для ввода необязательных расходов (optionalexpenses-item) при помощи querySelectorAll
 	incomeItem = document.querySelector('.choose-income'), //статьи возможного дохода
 	checkSavings = document.querySelector('#savings'),//чекбокс
 	sumValue = document.querySelector('.choose-sum'),//сумма
@@ -25,72 +26,113 @@ let start = document.getElementById('start'), //Получить кнопку "�
 
 let money, time;
 
-function start() {
-	money = +prompt('Ваш бюджет на месяц?', ''),
-	time = prompt('Введите дату в формате YYYY-MM-DD', '');
+start.addEventListener('click', function(){ 
+	time = prompt('Введите дату в формате YYYY-MM-DD', ''),
+	money = +prompt('Ваш бюджет на месяц?', '');
 
 	while(isNaN(money) || money == '' || money == null) {
 		money = +prompt('Ваш бюджет на месяц?', '');
-	}
-}
-start();
+	};
+	appData.budget = money;
+	appData.timeData = time;
+	budgetValue.textContent = money.toFixed();
+	yearValue.value = new Date(Date.parse(time)).getFullYear();
+	monthValue.value = new Date(Date.parse(time)).getMonth() + 1;
+	dayValue.value = new Date(Date.parse(time)).getDate();
+});
 
-let appData = {
-	budget: money,
-	expenses: {},
-	optionalExpenses: {},
-	incone: [],
-	timeData: time,
-	savings: true,
-	chooseExpenses: function () {
-		for (let i = 0; i < 2; i++) {
-			let a = prompt('Введите обязательную статью расходов в этом месяце', ''),
-				b = prompt('Во сколько обойдется?','');
+expensesBtn.addEventListener('click', function() {
+	let sum = 0;
+
+	for (let i = 0; i < expensesItem.length; i++) {
+			let a = expensesItem[i].value,
+				b = expensesItem[++i].value;
 
 			if  ( (typeof(a)) === "string" && (typeof(a)) != null && (typeof(b)) != null 
 				&& a != '' && b != '' && a.length < 50) {
 				console.log('done');
 				appData.expenses[a] = b;
+				sum += +b;
 			} else {
-				console.log('bad result');
-				i--;
+				i = i - 1;
 			}
-		};
-	},
-	detectDayBudget: function() {
-		appData.moneyPerDay = (appData.budget / 30).toFixed();
-		alert("Ежедневный бюджет: " + appData.moneyPerDay); 
-	},
-	detectLevel: function () {
-		if (appData.moneyPerDay < 100) {
-			console.log ('минимальный уровень достатка !');
-		} else if (appData.moneyPerDay > 100 && appData.moneyPerDay < 2000) {
-			console.log ('Средний уровень достатка !');
-		} else if (appData.moneyPerDay > 2000) {
-			console.log ('Высокий уровень достатка !');
-		} else {
-			console.log ('Произошла ошибка !');
-		};
-	},
-	checkSavings: function() {
-		if (appData.savings == true) {
-			let save = +prompt('Какова сума накоплений?',),
-				persent = +prompt('Под какой процент?');
+	};
+	expensesValue.textContent = sum;
+});
 
-			appData.monthIncome = save/100/12*persent;
-			alert('Доход в месяц с вашего депозита:' + appData.monthIncome);
-		}
-	},
-	chooseOptExpenses: function() {
-		for (let i = 1; i < 3; i++) {
-			let opt = prompt('Статья необязательных расходов', '');
+optionalExpensesBtn.addEventListener('click', function() {
+	for (let i = 0; i < optionalexpensesItem.length; i++) {
+			let opt = optionalexpensesItem[i].value;
 			appData.optionalExpenses[i] = opt;
-		}
-	},
-	chooseIncome: function() {
-		let items = prompt('Что принесет дополнительный доход? (Перечислите через запятую)', '');
-		appData.income = items.split(', ');
-		appData.income.push(prompt('Может что-то еще?'))ж
-		appData.income.sort();
+			optionalexpensesValue.textContent += appData.optionalExpenses[i] + ' ';
+		};
+});
+
+countBtn.addEventListener('click', function() {
+
+	if (appData.budget != undefined) {
+		appData.moneyPerDay = ((appData.budget - +expensesValue.textContent) / 30).toFixed();
+		daybudgetValue.textContent = appData.moneyPerDay;
+
+		if (appData.moneyPerDay < 100) {
+			levelValue.textContent = 'минимальный уровень достатка !';
+		} else if (appData.moneyPerDay > 100 && appData.moneyPerDay < 2000) {
+			levelValue.textContent = 'Средний уровень достатка !';
+		} else if (appData.moneyPerDay > 2000) {
+			levelValue.textContent = 'Высокий уровень достатка !';
+		} else {
+			levelValue.textContent = 'Произошла ошибка !';
+		};	
+	} else {
+		daybudgetValue.textContent = 'Произошла ошибка !';
+	};
+});
+
+incomeItem.addEventListener('input', function() {
+	let item = incomeItem.value;
+	appData.income = item.split(', ');
+	incomeValue.textContent = appData.income;
+})
+
+checkSavings.addEventListener('click', function() {
+	if (appData.savings == true) {
+		appData.savings = false;
+	} else {
+		appData.savings = true;
 	}
+})
+
+sumValue.addEventListener('input', function() {
+	if (appData.savings == true) {
+		let sum = +sumValue.value,
+			persent = +percentValue.value;
+
+		appData.monthIncome = sum/100/12*persent;	
+		appData.yearIncome = sum/100*persent;
+
+		monthsavingsValue.textContent = appData.monthIncome.toFixed(1);
+		yearsavingsValue.textContent = appData.yearIncome.toFixed(1);
+	}
+})
+
+percentValue.addEventListener('input', function() {
+	if (appData.savings == true) {
+		let sum = +sumValue.value,
+			persent = +percentValue.value;
+
+		appData.monthIncome = sum/100/12*persent;	
+		appData.yearIncome = sum/100*persent;
+
+		monthsavingsValue.textContent = appData.monthIncome.toFixed(1);
+		yearsavingsValue.textContent = appData.yearIncome.toFixed(1);
+	}
+})
+
+let appData = {
+	budget: money,
+	expenses: {},
+	optionalExpenses: {},
+	income: [],
+	timeData: time,
+	savings: false
 };
